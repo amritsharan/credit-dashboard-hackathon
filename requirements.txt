@@ -1,0 +1,10 @@
+streamlit
+yfinance
+pandas
+numpy
+plotly
+feedparser
+vaderSentiment
+requests
+xlsxwriter
+streamlit-autorefresh
