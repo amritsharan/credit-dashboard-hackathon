@@ -1,6 +1,7 @@
 # 📊 CredTech Dashboard - Real-Time Explainable Credit Intelligence
 
-[![Streamlit App](https://img.shields.io/badge/Streamlit-FF4B4B?logo=Streamlit&logoColor=white)](https://credtech-dashboard.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?logo=vercel&logoColor=white)](https://credit-dashboard-hackathon.vercel.app)
+[![API Backend](https://img.shields.io/badge/API-Render-46E3B7?logo=render&logoColor=white)](https://credit-dashboard-hackathon.onrender.com)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -61,18 +62,26 @@ CredTech Dashboard is a sophisticated, real-time financial intelligence platform
 - Python 3.8 or higher
 - pip package manager
 
-### Step 1: Clone the Repository
+### Option 1: Use Live Demo (Easiest)
+🌐 **Frontend**: [https://credit-dashboard-hackathon.vercel.app](https://credit-dashboard-hackathon.vercel.app)
+🔌 **API Backend**: [https://credit-dashboard-hackathon.onrender.com](https://credit-dashboard-hackathon.onrender.com)
+
+No installation required - just visit the live demo!
+
+### Option 2: Run Locally
+
+#### Step 1: Clone the Repository
 ```bash
 git clone https://github.com/amritsharan/credit-dashboard-hackathon.git
 cd credit-dashboard-hackathon
 ```
 
-### Step 2: Install Dependencies
+#### Step 2: Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 3: Configure API Keys (Optional)
+#### Step 3: Configure API Keys (Optional)
 For full macroeconomic data integration, set your FRED API key:
 ```bash
 # Create a .env file in the project root
@@ -81,12 +90,19 @@ FRED_API_KEY=your_fred_api_key_here
 
 Get your free API key at [FRED API](https://fredaccount.stlouisfed.org/login/secure/)
 
-### Step 4: Run the Dashboard
+#### Step 4: Run the Backend (Flask API)
 ```bash
-streamlit run credit_dashboard.py
+python app.py
 ```
 
-The dashboard will open at `http://localhost:8501`
+The API server will start at `http://localhost:5000`
+
+#### Step 5: Access the Dashboard
+Open `index.html` in your browser or use a local server:
+```bash
+python -m http.server 8000
+```
+Then visit `http://localhost:8000`
 
 ## 📖 Usage Guide
 
@@ -120,7 +136,8 @@ The dashboard will open at `http://localhost:8501`
 ## 📋 Requirements
 
 ```
-streamlit              # Web app framework
+flask                 # Web API framework
+flask-cors            # CORS support
 yfinance              # Financial data fetching
 pandas                # Data manipulation
 numpy                 # Numerical computing
@@ -129,26 +146,32 @@ feedparser            # RSS feed parsing
 vaderSentiment        # Sentiment analysis
 requests              # HTTP library
 xlsxwriter            # Excel file creation
-streamlit-autorefresh # Auto-refresh functionality
+python-dotenv         # Environment variables
+gunicorn              # Production server
 ```
 
 ## 🏗️ Project Architecture
 
 ```
 credit-dashboard-hackathon/
-├── credit_dashboard.py        # Main application
+├── app.py                     # Flask API server
+├── engine.py                  # Credit scoring engine
+├── credit_dashboard.py        # Legacy Streamlit app
+├── index.html                 # Modern web dashboard
 ├── requirements.txt           # Python dependencies
-├── README.md                  # This file
-└── assets/                    # (Optional) Images/logos
+├── vercel.json                # Vercel deployment config
+├── .env.production            # Production environment variables
+└── README.md                  # This file
 ```
 
 ### Core Components
 
-1. **Data Fetching**: Integrates with yfinance, Yahoo Finance RSS, and FRED API
-2. **Sentiment Analysis**: Uses VADER for news headline analysis
-3. **Score Calculation**: Weighted composite scoring algorithm
-4. **Visualization**: Plotly Express for interactive charts
-5. **Data Export**: XlsxWriter for professional Excel reports
+1. **Flask API** (`app.py`): RESTful API endpoints for credit analysis
+2. **Credit Engine** (`engine.py`): Core scoring algorithm and data processing
+3. **Web Dashboard** (`index.html`): Modern, responsive frontend with real-time updates
+4. **Data Fetching**: Integrates with yfinance, Yahoo Finance RSS, and FRED API
+5. **Sentiment Analysis**: Uses VADER for news headline analysis
+6. **Visualization**: Plotly.js for interactive charts
 
 ## 🔧 Configuration Options
 
@@ -173,13 +196,34 @@ credit-dashboard-hackathon/
 
 ## 🚀 Deployment
 
-### Option 1: Streamlit Cloud (Free)
-```bash
-# Push to GitHub, then deploy at https://streamlit.io/cloud
-```
+This project uses a **decoupled architecture** with separate frontend and backend deployments:
 
-### Option 2: AWS, Azure, or Docker
-The app can be containerized and deployed to any cloud platform supporting Python.
+### Current Deployment
+- **Frontend**: Vercel - [https://credit-dashboard-hackathon.vercel.app](https://credit-dashboard-hackathon.vercel.app)
+- **Backend**: Render - [https://credit-dashboard-hackathon.onrender.com](https://credit-dashboard-hackathon.onrender.com)
+
+### Deploy Your Own
+
+#### Backend (Python Flask API)
+**Render** (Free Tier Available):
+1. Push your code to GitHub
+2. Connect repository at [render.com](https://render.com)
+3. Configure:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn -w 4 -b 0.0.0.0:5000 app:app`
+   - Add Environment Variable: `FRED_API_KEY=your_key`
+
+**Alternative platforms**: Railway, Heroku, PythonAnywhere
+
+#### Frontend (Static HTML)
+**Vercel** (Free):
+1. Push to GitHub
+2. Import project at [vercel.com](https://vercel.com)
+3. Set Environment Variable:
+   - `VITE_API_BASE_URL=https://your-backend-url.com/api`
+4. Deploy
+
+**Alternative platforms**: Netlify, GitHub Pages, Cloudflare Pages
 
 ## 📈 Example Use Cases
 
@@ -214,7 +258,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Live Demo
 
-Try the live dashboard: [CredTech Dashboard on Streamlit](https://credtech-dashboard.streamlit.app/)
+🚀 **Try the live dashboard**: [https://credit-dashboard-hackathon.vercel.app](https://credit-dashboard-hackathon.vercel.app)
+
+📡 **API Endpoints**: [https://credit-dashboard-hackathon.onrender.com](https://credit-dashboard-hackathon.onrender.com)
+- Health Check: `/api/health`
+- Analyze: `POST /api/analyze`
+- Ticker Info: `GET /api/ticker/{symbol}`
 
 ## 📞 Support & Feedback
 

@@ -125,7 +125,9 @@ class CredTechEngine:
                 return None
             
             # 1. Stock Price Contribution (0-100 scale)
-            price_change = (stock_data["Close"].iloc[-1] - stock_data["Close"].iloc[0]) / stock_data["Close"].iloc[0]
+            price_current = stock_data["Close"].iloc[-1].item() if hasattr(stock_data["Close"].iloc[-1], 'item') else float(stock_data["Close"].iloc[-1])
+            price_initial = stock_data["Close"].iloc[0].item() if hasattr(stock_data["Close"].iloc[0], 'item') else float(stock_data["Close"].iloc[0])
+            price_change = (price_current - price_initial) / price_initial
             price_contribution = np.clip(price_change * 100, -50, 50)
             
             # 2. News Sentiment Contribution
@@ -138,16 +140,21 @@ class CredTechEngine:
             
             # 3. Macro Factor Contribution
             macro_contribution = 0
-            if macro_data is not None and not macro_data.empty:
+            if isinstance(macro_data, pd.DataFrame) and len(macro_data) > 0:
                 try:
                     if len(macro_data) > 1:
-                        macro_change = (macro_data["value"].iloc[-1] - macro_data["value"].iloc[0]) / macro_data["value"].iloc[0]
-                        macro_contribution = -macro_change * 15  # Negative macro impact
-                except (ZeroDivisionError, ValueError):
+                        first_val = macro_data["value"].iloc[0]
+                        last_val = macro_data["value"].iloc[-1]
+                        if first_val != 0 and pd.notna(first_val) and pd.notna(last_val):
+                            macro_change = (last_val - first_val) / first_val
+                            macro_contribution = -macro_change * 15  # Negative macro impact
+                except (ZeroDivisionError, ValueError, TypeError):
                     macro_contribution = 0
             
             # 4. Daily volatility metric
-            daily_change = (stock_data["Close"].iloc[-1] - stock_data["Close"].iloc[-2]) / stock_data["Close"].iloc[-2]
+            close_price_current = stock_data["Close"].iloc[-1].item() if hasattr(stock_data["Close"].iloc[-1], 'item') else float(stock_data["Close"].iloc[-1])
+            close_price_prev = stock_data["Close"].iloc[-2].item() if hasattr(stock_data["Close"].iloc[-2], 'item') else float(stock_data["Close"].iloc[-2])
+            daily_change = (close_price_current - close_price_prev) / close_price_prev
             volatility_penalty = abs(daily_change) * 10 if abs(daily_change) > 0.05 else 0
             
             # Base score with weighted components
@@ -214,7 +221,7 @@ class CredTechEngine:
                     "ticker": ticker,
                     "score": score_result,
                     "news": news_data,
-                    "current_price": float(stock_data["Close"].iloc[-1]),
+                    "current_price": stock_data["Close"].iloc[-1].item() if hasattr(stock_data["Close"].iloc[-1], 'item') else float(stock_data["Close"].iloc[-1]),
                     "timestamp": datetime.now().isoformat()
                 }
                 results.append(result)

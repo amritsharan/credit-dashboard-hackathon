@@ -567,7 +567,7 @@
                 <div class="step fade-in">
                     <div class="step-number">1</div>
                     <h4>Enter Tickers</h4>
-                    <p>Input stock symbols for companies you want to monitor</p>
+                    <p>Input any public stock symbols (e.g., AAPL, GOOGL, AMZN, etc.)</p>
                 </div>
                 <div class="step fade-in">
                     <div class="step-number">2</div>
@@ -591,8 +591,8 @@
     <!-- Stats Section -->
     <section class="stats">
         <div class="stat-card fade-in">
-            <div class="stat-number">100+</div>
-            <div class="stat-label">Supported Tickers</div>
+            <div class="stat-number">Any</div>
+            <div class="stat-label">Public Company Ticker</div>
         </div>
         <div class="stat-card fade-in">
             <div class="stat-number">Real-Time</div>
@@ -697,7 +697,10 @@
     </footer>
 
     <script>
-        const API_BASE = 'http://localhost:5000/api';
+        // Use environment variable for API endpoint, fallback to localhost for development
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:5000/api'
+            : (window.API_BASE_URL || '/api');
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -770,7 +773,10 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Failed to connect to API. Make sure the server is running on http://localhost:5000');
+                const apiUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+                    ? 'http://localhost:5000' 
+                    : 'your deployed backend URL';
+                alert(`Failed to connect to API. If running locally, make sure the server is running on ${apiUrl}. Otherwise, configure VITE_API_URL environment variable.`);
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -860,8 +866,9 @@
             dashboard.innerHTML = `
                 <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 2000;">
                     <div style="background: var(--card-bg); padding: 2rem; border-radius: 1rem; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
-                        <h2 style="margin: 0 0 1.5rem 0; color: white;">Analyze Tickers</h2>
-                        <input type="text" id="tickerInput" placeholder="Enter tickers (e.g., AAPL, MSFT, TSLA)" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); border-radius: 0.4rem; color: white;" value="AAPL, MSFT, TSLA">
+                        <h2 style="margin: 0 0 0.5rem 0; color: white;">Analyze Any Public Company</h2>
+                        <p style="margin: 0 0 1rem 0; color: var(--text-secondary); font-size: 0.9rem;">Enter any publicly traded ticker symbols (e.g., GOOGL, AMZN, NVDA, JPM, etc.)</p>
+                        <input type="text" id="tickerInput" placeholder="Enter any tickers (e.g., GOOGL, AMZN, NVDA)" style="width: 100%; padding: 0.8rem; margin-bottom: 1rem; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); border-radius: 0.4rem; color: white;" value="AAPL, MSFT, TSLA">
                         <button onclick="analyzeTickers(document.getElementById('tickerInput').value)" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">Analyze</button>
                         <button onclick="this.closest('div').parentElement.parentElement.remove()" class="btn btn-secondary" style="width: 100%;">Close</button>
                         <div id="results" style="margin-top: 1.5rem;"></div>
